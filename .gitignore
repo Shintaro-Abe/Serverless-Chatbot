@@ -1,0 +1,33 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+.terraform.lock.hcl
+*.tfvars
+!terraform.tfvars.example
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# ドキュメント・設計書（機密情報を含む可能性あり）
+docs/
+response.md
+
+# テスト（実リソース ID を含む）
+tests/
+.pytest_cache/
+
+# スクリプト
+scripts/
+
+# Claude Code 設定
+.claude/
+.mcp.json
+
+# Terraform plan/apply 出力
+plan-output.txt
+apply-output.txt

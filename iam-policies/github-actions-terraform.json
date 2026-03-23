@@ -1,0 +1,370 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TerraformStateS3Access",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::dev-ai-app-tfstate",
+        "arn:aws:s3:::dev-ai-app-tfstate/*"
+      ],
+      "Comment": "tfstate ファイルの読み書きとロック用"
+    },
+    {
+      "Sid": "TerraformStateLockDynamoDB",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:DeleteItem"
+      ],
+      "Resource": "arn:aws:dynamodb:ap-northeast-1:*:table/dev-ai-app-tfstate-lock",
+      "Comment": "tfstate ロック管理用"
+    },
+    {
+      "Sid": "VpcAndNetworking",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateVpc",
+        "ec2:DeleteVpc",
+        "ec2:DescribeVpcs",
+        "ec2:ModifyVpcAttribute",
+        "ec2:CreateSubnet",
+        "ec2:DeleteSubnet",
+        "ec2:DescribeSubnets",
+        "ec2:CreateInternetGateway",
+        "ec2:DeleteInternetGateway",
+        "ec2:AttachInternetGateway",
+        "ec2:DetachInternetGateway",
+        "ec2:DescribeInternetGateways",
+        "ec2:AllocateAddress",
+        "ec2:ReleaseAddress",
+        "ec2:DescribeAddresses",
+        "ec2:CreateNatGateway",
+        "ec2:DeleteNatGateway",
+        "ec2:DescribeNatGateways",
+        "ec2:CreateRouteTable",
+        "ec2:DeleteRouteTable",
+        "ec2:DescribeRouteTables",
+        "ec2:CreateRoute",
+        "ec2:DeleteRoute",
+        "ec2:AssociateRouteTable",
+        "ec2:DisassociateRouteTable",
+        "ec2:CreateNetworkAcl",
+        "ec2:DeleteNetworkAcl",
+        "ec2:DescribeNetworkAcls",
+        "ec2:CreateNetworkAclEntry",
+        "ec2:DeleteNetworkAclEntry",
+        "ec2:ReplaceNetworkAclEntry",
+        "ec2:ReplaceNetworkAclAssociation",
+        "ec2:CreateDhcpOptions",
+        "ec2:DeleteDhcpOptions",
+        "ec2:DescribeDhcpOptions",
+        "ec2:AssociateDhcpOptions",
+        "ec2:CreateFlowLogs",
+        "ec2:DeleteFlowLogs",
+        "ec2:DescribeFlowLogs",
+        "ec2:CreateTags",
+        "ec2:DeleteTags",
+        "ec2:DescribeTags"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-1"
+        }
+      },
+      "Comment": "VPC, サブネット, NAT/IGW, ルートテーブル, NACL, DHCP, フローログ"
+    },
+    {
+      "Sid": "VpcEndpoints",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateVpcEndpoint",
+        "ec2:DeleteVpcEndpoints",
+        "ec2:DescribeVpcEndpoints",
+        "ec2:ModifyVpcEndpoint"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-1"
+        }
+      },
+      "Comment": "S3, DynamoDB, Bedrock Runtime, CloudWatch Logs の VPC Endpoint"
+    },
+    {
+      "Sid": "SecurityGroups",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateSecurityGroup",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSecurityGroupRules",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:AuthorizeSecurityGroupEgress",
+        "ec2:RevokeSecurityGroupIngress",
+        "ec2:RevokeSecurityGroupEgress"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-1"
+        }
+      },
+      "Comment": "Lambda SG, VPC Endpoint SG の管理"
+    },
+    {
+      "Sid": "LambdaManagement",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:DeleteFunction",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
+        "lambda:GetPolicy",
+        "lambda:ListVersionsByFunction",
+        "lambda:PublishLayerVersion",
+        "lambda:DeleteLayerVersion",
+        "lambda:GetLayerVersion",
+        "lambda:TagResource",
+        "lambda:UntagResource",
+        "lambda:ListTags",
+        "lambda:PutFunctionEventInvokeConfig",
+        "lambda:GetFunctionEventInvokeConfig",
+        "lambda:DeleteFunctionEventInvokeConfig"
+      ],
+      "Resource": [
+        "arn:aws:lambda:ap-northeast-1:*:function:dev-ai-app-*",
+        "arn:aws:lambda:ap-northeast-1:*:layer:dev-ai-app-*",
+        "arn:aws:lambda:ap-northeast-1:*:layer:dev-ai-app-*:*"
+      ],
+      "Comment": "chat-handler Lambda と boto3 Layer の管理"
+    },
+    {
+      "Sid": "IamRoleManagement",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:PassRole",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:ListRoleTags",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfilesForRole",
+        "iam:UpdateAssumeRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::*:role/dev-ai-app-*",
+      "Comment": "Lambda 実行ロール + インラインポリシーの管理"
+    },
+    {
+      "Sid": "ApiGatewayManagement",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:POST",
+        "apigateway:GET",
+        "apigateway:PUT",
+        "apigateway:DELETE",
+        "apigateway:PATCH",
+        "apigateway:UpdateRestApiPolicy"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:ap-northeast-1::/restapis",
+        "arn:aws:apigateway:ap-northeast-1::/restapis/*",
+        "arn:aws:apigateway:ap-northeast-1::/apikeys",
+        "arn:aws:apigateway:ap-northeast-1::/apikeys/*",
+        "arn:aws:apigateway:ap-northeast-1::/usageplans",
+        "arn:aws:apigateway:ap-northeast-1::/usageplans/*",
+        "arn:aws:apigateway:ap-northeast-1::/tags/*"
+      ],
+      "Comment": "REST API, リソース, メソッド, ステージ, API Key, Usage Plan"
+    },
+    {
+      "Sid": "WafV2Management",
+      "Effect": "Allow",
+      "Action": [
+        "wafv2:CreateWebACL",
+        "wafv2:DeleteWebACL",
+        "wafv2:GetWebACL",
+        "wafv2:UpdateWebACL",
+        "wafv2:ListTagsForResource",
+        "wafv2:TagResource",
+        "wafv2:UntagResource",
+        "wafv2:AssociateWebACL",
+        "wafv2:DisassociateWebACL",
+        "wafv2:GetWebACLForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-1"
+        }
+      },
+      "Comment": "WAF Web ACL の作成と API Gateway への紐付け"
+    },
+    {
+      "Sid": "DynamoDBManagement",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:DeleteTable",
+        "dynamodb:DescribeTable",
+        "dynamodb:DescribeContinuousBackups",
+        "dynamodb:DescribeTimeToLive",
+        "dynamodb:UpdateTimeToLive",
+        "dynamodb:UpdateContinuousBackups",
+        "dynamodb:TagResource",
+        "dynamodb:UntagResource",
+        "dynamodb:ListTagsOfResource",
+        "dynamodb:UpdateTable"
+      ],
+      "Resource": "arn:aws:dynamodb:ap-northeast-1:*:table/dev-ai-app-*",
+      "Comment": "conversations テーブルの管理（GSI, TTL, PITR, Streams 含む）"
+    },
+    {
+      "Sid": "S3BucketManagement",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:GetBucketPolicy",
+        "s3:PutBucketPolicy",
+        "s3:DeleteBucketPolicy",
+        "s3:GetBucketAcl",
+        "s3:GetBucketVersioning",
+        "s3:PutBucketVersioning",
+        "s3:GetEncryptionConfiguration",
+        "s3:PutEncryptionConfiguration",
+        "s3:GetBucketPublicAccessBlock",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:GetLifecycleConfiguration",
+        "s3:PutLifecycleConfiguration",
+        "s3:GetBucketTagging",
+        "s3:PutBucketTagging",
+        "s3:GetBucketLogging",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::dev-ai-app-*"
+      ],
+      "Comment": "フローログ, デプロイ, ドキュメント用 S3 バケットの管理"
+    },
+    {
+      "Sid": "CloudWatchLogsManagement",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:DeleteLogGroup",
+        "logs:DescribeLogGroups",
+        "logs:PutRetentionPolicy",
+        "logs:DeleteRetentionPolicy",
+        "logs:TagLogGroup",
+        "logs:UntagLogGroup",
+        "logs:ListTagsLogGroup",
+        "logs:TagResource",
+        "logs:UntagResource",
+        "logs:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:logs:ap-northeast-1:*:log-group:*dev-ai-app*",
+      "Comment": "Lambda, API Gateway アクセスログ用ロググループ"
+    },
+    {
+      "Sid": "CloudWatchAlarmsAndDashboard",
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:PutMetricAlarm",
+        "cloudwatch:DeleteAlarms",
+        "cloudwatch:DescribeAlarms",
+        "cloudwatch:PutDashboard",
+        "cloudwatch:DeleteDashboards",
+        "cloudwatch:GetDashboard",
+        "cloudwatch:TagResource",
+        "cloudwatch:UntagResource",
+        "cloudwatch:ListTagsForResource"
+      ],
+      "Resource": [
+        "arn:aws:cloudwatch:ap-northeast-1:*:alarm:dev-ai-app-*",
+        "arn:aws:cloudwatch::*:dashboard/dev-ai-app-*"
+      ],
+      "Comment": "CloudWatch アラーム 4 件 + ダッシュボードの管理"
+    },
+    {
+      "Sid": "SnsManagement",
+      "Effect": "Allow",
+      "Action": [
+        "sns:CreateTopic",
+        "sns:DeleteTopic",
+        "sns:GetTopicAttributes",
+        "sns:SetTopicAttributes",
+        "sns:Subscribe",
+        "sns:Unsubscribe",
+        "sns:GetSubscriptionAttributes",
+        "sns:TagResource",
+        "sns:UntagResource",
+        "sns:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:sns:ap-northeast-1:*:dev-ai-app-*",
+      "Comment": "アラート通知用 SNS トピックとサブスクリプション"
+    },
+    {
+      "Sid": "XRayManagement",
+      "Effect": "Allow",
+      "Action": [
+        "xray:CreateSamplingRule",
+        "xray:DeleteSamplingRule",
+        "xray:GetSamplingRules",
+        "xray:UpdateSamplingRule",
+        "xray:TagResource",
+        "xray:UntagResource",
+        "xray:ListTagsForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-1"
+        }
+      },
+      "Comment": "X-Ray サンプリングルールの管理"
+    },
+    {
+      "Sid": "BedrockReadOnly",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:ListFoundationModels"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-1"
+        }
+      },
+      "Comment": "ai モジュールの Model Access チェック用（local-exec）"
+    },
+    {
+      "Sid": "StsGetCallerIdentity",
+      "Effect": "Allow",
+      "Action": [
+        "sts:GetCallerIdentity"
+      ],
+      "Resource": "*",
+      "Comment": "Terraform の data.aws_caller_identity で使用"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+environment      = "dev"
+cost_center      = "your-cost-center"                               # ← 要変更
+bedrock_model_id = "apac.anthropic.claude-sonnet-4-20250514-v1:0"   # ← リージョンに応じて変更
+alert_email      = "your-email@example.com"                         # ← 要変更
