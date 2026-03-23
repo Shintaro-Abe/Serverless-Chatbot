@@ -28,6 +28,13 @@ scripts/
 .claude/
 .mcp.json
 
+# テンプレート・ワークフロー
+.docs/
+.devcontainer/
+.github/
+PROMPT_GUIDE.md
+
 # Terraform plan/apply 出力
 plan-output.txt
 apply-output.txt
+.gitattributes
